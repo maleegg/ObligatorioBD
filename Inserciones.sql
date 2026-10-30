@@ -1,4 +1,5 @@
 USE OBLIGATORIO;
+SET NAMES utf8mb4;
 
 INSERT INTO login (correo, contrasena, rol) VALUES
                                                 ('admin@ucu.edu.uy', 'admin123', 'administrador'),
