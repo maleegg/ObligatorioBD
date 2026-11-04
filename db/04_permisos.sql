@@ -4,9 +4,9 @@ DROP USER IF EXISTS 'admin_torneo'@'%';
 DROP USER IF EXISTS 'planillero_torneo'@'%';
 DROP USER IF EXISTS 'login_app'@'%';
 
-CREATE USER 'admin_torneo'@'%' IDENTIFIED BY 'Admin_Torneo_2026!';
-CREATE USER 'planillero_torneo'@'%' IDENTIFIED BY 'Planillero_2026!';
-CREATE USER 'login_app'@'%' IDENTIFIED BY 'LoginApp_2026!';
+CREATE USER 'admin_torneo'@'%' IDENTIFIED WITH mysql_native_password BY 'Admin_Torneo_2026!';
+CREATE USER 'planillero_torneo'@'%' IDENTIFIED WITH mysql_native_password BY 'Planillero_2026!';
+CREATE USER 'login_app'@'%' IDENTIFIED WITH mysql_native_password BY 'LoginApp_2026!';
 
 -- administrador: gestiona todos los datos de la base
 GRANT SELECT, INSERT, UPDATE, DELETE ON OBLIGATORIO.* TO 'admin_torneo'@'%';
