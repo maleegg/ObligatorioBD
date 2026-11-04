@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Torneo Interfacultades{% endblock %} · UCU Fútbol 5</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+{% if session.rol %}
+<header class="barra">
+  <a class="marca" href="{{ url_for('inicio') }}">⚽ Fútbol 5 UCU</a>
+  <nav>
+    {% if session.rol == 'administrador' %}
+      <a href="{{ url_for('torneos.lista') }}">Torneos</a>
+      <a href="{{ url_for('jugadores.lista') }}">Jugadores</a>
+      <a href="{{ url_for('equipos.lista') }}">Equipos</a>
+      <a href="{{ url_for('complejos.lista') }}">Canchas</a>
+    {% endif %}
+    <a href="{{ url_for('partidos.lista') }}">Partidos</a>
+    {% if session.rol == 'administrador' %}
+      <a href="{{ url_for('sanciones.lista') }}">Sanciones</a>
+      <a href="{{ url_for('reportes.ver') }}">Reportes</a>
+    {% endif %}
+  </nav>
+  <form class="selector-torneo" method="post" action="{{ url_for('elegir_torneo') }}">
+    <label for="id_torneo">Edición</label>
+    <select id="id_torneo" name="id_torneo" onchange="this.form.submit()">
+      {% for t in torneos_menu %}
+        <option value="{{ t.id_torneo }}" {% if t.id_torneo == id_torneo_activo %}selected{% endif %}>{{ t.nombre }} ({{ t.estado }})</option>
+      {% endfor %}
+    </select>
+    <noscript><button>Cambiar</button></noscript>
+  </form>
+  <div class="usuario">{{ session.correo }} · <em>{{ session.rol }}</em> · <a href="{{ url_for('logout') }}">Salir</a></div>
+</header>
+{% endif %}
+<main>
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% for categoria, mensaje in mensajes %}
+      <div class="aviso {{ categoria }}">{{ mensaje }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block contenido %}{% endblock %}
+</main>
+</body>
+</html>

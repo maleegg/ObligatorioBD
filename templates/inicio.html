@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Hola 👋</h1>
+{% if session.rol == 'administrador' %}
+<p class="sutil">Como administrador gestionás toda la información del torneo.</p>
+<div class="grilla-accesos">
+  <a class="acceso" href="{{ url_for('torneos.lista') }}"><b>Torneos</b><span>Ediciones y su etapa</span></a>
+  <a class="acceso" href="{{ url_for('jugadores.lista') }}"><b>Jugadores</b><span>Alta, baja y modificación</span></a>
+  <a class="acceso" href="{{ url_for('equipos.lista') }}"><b>Equipos</b><span>Equipos y planteles</span></a>
+  <a class="acceso" href="{{ url_for('complejos.lista') }}"><b>Complejos y canchas</b><span>Dónde se juega</span></a>
+  <a class="acceso" href="{{ url_for('partidos.lista') }}"><b>Partidos</b><span>Fixture y planillas</span></a>
+  <a class="acceso" href="{{ url_for('sanciones.lista') }}"><b>Sanciones</b><span>Suspensiones</span></a>
+  <a class="acceso" href="{{ url_for('reportes.ver') }}"><b>Reportes</b><span>Posiciones, goleadores y más</span></a>
+</div>
+{% else %}
+<p class="sutil">Como planillero registrás las planillas, goles y tarjetas de los partidos.</p>
+{% endif %}
+<h2>Partidos ya disputados sin marcar como jugados</h2>
+{% if pendientes %}
+<table>
+  <tr><th>Fecha</th><th>Día</th><th>Hora</th><th>Partido</th><th></th></tr>
+  {% for p in pendientes %}
+  <tr><td>{{ p.numero_fecha }}</td><td>{{ p.dia|fecha_uy }}</td><td>{{ p.hora_inicio }}:00</td>
+      <td>{{ p.local }} vs {{ p.visitante }}</td>
+      <td><a class="boton" href="{{ url_for('planillas.ver', id_partido=p.id_partido) }}">Cargar planilla</a></td></tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="sutil">No hay partidos pendientes de planilla.</p>
+{% endif %}
+{% endblock %}

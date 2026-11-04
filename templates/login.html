@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block titulo %}Ingresar{% endblock %}
+{% block contenido %}
+<section class="tarjeta login">
+  <h1>⚽ Torneo Interfacultades</h1>
+  <p class="sutil">Ingresá con tu usuario de administrador o planillero.</p>
+  <form method="post">
+    <label>Correo <input type="email" name="correo" required maxlength="100" autofocus></label>
+    <label>Contraseña <input type="password" name="contrasena" required maxlength="100"></label>
+    <button class="primario">Ingresar</button>
+  </form>
+</section>
+{% endblock %}
