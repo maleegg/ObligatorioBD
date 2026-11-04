@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Reportes</h1>
+<nav class="indice">{% for r in reportes %}<a href="#r{{ loop.index }}">{{ r.titulo }}</a>{% endfor %}</nav>
+{% for r in reportes %}
+<section class="tarjeta" id="r{{ loop.index }}">
+  <h2>{{ r.titulo }}</h2>
+  {% if r.descripcion %}<p class="sutil">{{ r.descripcion }}</p>{% endif %}
+  {% if loop.index == 13 %}
+  <form method="get" class="en-linea" action="#r13"><label>Fecha N° <input type="number" name="fecha" min="1" max="50" required value="{{ fecha }}" class="corto"></label><button>Ver</button></form>
+  {% endif %}
+  {% if r.filas %}
+  <table>
+    <tr>{% for c in r.columnas %}<th>{{ c }}</th>{% endfor %}</tr>
+    {% for fila in r.filas %}<tr>{% for valor in fila %}<td>{{ (valor|fecha_uy) if valor is not none else '—' }}</td>{% endfor %}</tr>{% endfor %}
+  </table>
+  {% else %}<p class="sutil">Sin datos para esta edición.</p>{% endif %}
+</section>
+{% endfor %}
+{% endblock %}
