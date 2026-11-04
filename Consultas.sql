@@ -201,5 +201,5 @@ FROM tarjeta t
 WHERE p.id_torneo = 1
   AND t.color = 'amarilla'
 GROUP BY j.ci_jugador, j.nombre, j.apellido
-HAVING COUNT(*) = 2
+HAVING MOD(COUNT(*), 3) = 2  -- les falta 1 amarilla para la siguiente suspension
 ORDER BY j.apellido;
