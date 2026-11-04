@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set c = complejo or {} %}
+<h1>{{ 'Editar' if editando else 'Nuevo' }} complejo</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Nombre <input name="nombre" required maxlength="100" value="{{ c.get('nombre', '') }}"></label>
+  <label>Dirección <input name="direccion" required maxlength="100" value="{{ c.get('direccion', '') }}"></label>
+  <label>Departamento <input name="departamento" required maxlength="80" value="{{ c.get('departamento', '') }}"></label>
+  <div class="botones"><button class="primario">Guardar</button><a href="{{ url_for('complejos.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}

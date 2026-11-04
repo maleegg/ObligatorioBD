@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Inscribir equipo en {{ torneo.nombre }}</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Nombre del equipo <input name="nombre" required maxlength="20" value="{{ datos.get('nombre', '') }}"></label>
+  <label>Facultad que representa <select name="id_facultad" required>
+    <option value="">Elegí…</option>
+    {% for f in facultades %}<option value="{{ f.id_facultad }}" {% if datos.get('id_facultad') == f.id_facultad|string %}selected{% endif %}>{{ f.nombre }}</option>{% endfor %}
+  </select></label>
+  <div class="fila">
+    <label>Capitán (debe ser de la misma facultad) <select name="ci_capitan" required>
+      <option value="">Elegí…</option>
+      {% for j in candidatos %}<option value="{{ j.ci_jugador }}" {% if datos.get('ci_capitan') == j.ci_jugador|string %}selected{% endif %}>{{ j.facultad }} — {{ j.apellido }}, {{ j.nombre }}</option>{% endfor %}
+    </select></label>
+    <label>Camiseta del capitán <input type="number" name="numero_camiseta" required min="1" max="99" value="{{ datos.get('numero_camiseta', '') }}"></label>
+  </div>
+  <p class="sutil">El capitán queda agregado automáticamente al plantel.</p>
+  <div class="botones"><button class="primario">Inscribir</button><a href="{{ url_for('equipos.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}

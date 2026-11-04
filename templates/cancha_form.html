@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set k = cancha or {} %}
+<h1>{{ 'Editar' if editando else 'Nueva' }} cancha · {{ complejo.nombre }}</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Nombre de la cancha <input name="nombre_cancha" required maxlength="80" value="{{ k.get('nombre_cancha', '') }}"></label>
+  <label>Superficie <select name="superficie" required>
+    {% for s in superficies %}<option {% if k.get('superficie') == s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+  </select></label>
+  <label class="check"><input type="checkbox" name="techada" value="1" {% if k.get('techada') %}checked{% endif %}> Techada</label>
+  <div class="botones"><button class="primario">Guardar</button><a href="{{ url_for('complejos.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}

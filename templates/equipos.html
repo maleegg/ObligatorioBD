@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="encabezado">
+  <h1>Equipos · {{ torneo.nombre if torneo else '' }}</h1>
+  {% if torneo and torneo.estado == 'inscripcion' %}<a class="boton primario" href="{{ url_for('equipos.nuevo') }}">+ Inscribir equipo</a>{% endif %}
+</div>
+{% if torneo and torneo.estado != 'inscripcion' %}
+<p class="aviso info">Esta edición está <b>{{ torneo.estado }}</b>: los planteles ya no se pueden modificar. Para inscribir equipos, elegí arriba una edición en inscripción.</p>
+{% endif %}
+<table>
+  <tr><th>Equipo</th><th>Facultad</th><th>Capitán</th><th>Jugadores</th><th></th></tr>
+  {% for e in equipos %}
+  <tr>
+    <td>{{ e.nombre }}</td><td>{{ e.facultad }}</td><td>{{ e.capitan }}</td>
+    <td>{{ e.jugadores }} / 10 {% if e.jugadores < 5 %}<span class="etiqueta cancelado">faltan {{ 5 - e.jugadores }}</span>{% endif %}</td>
+    <td class="acciones">
+      <a href="{{ url_for('equipos.plantel', id_equipo=e.id_equipo) }}">Ver plantel</a>
+      <form method="post" action="{{ url_for('equipos.borrar', id_equipo=e.id_equipo) }}" onsubmit="return confirm('¿Eliminar este equipo y su plantel?')"><button class="link peligro">Eliminar</button></form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="5" class="sutil">No hay equipos en esta edición.</td></tr>{% endfor %}
+</table>
+{% endblock %}

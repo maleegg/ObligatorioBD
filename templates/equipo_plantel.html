@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set abierto = equipo.estado_torneo == 'inscripcion' %}
+<div class="encabezado"><h1>{{ equipo.nombre }}</h1><a href="{{ url_for('equipos.lista') }}">← Volver a equipos</a></div>
+<p class="sutil">{{ equipo.facultad }} · {{ equipo.torneo }} ({{ equipo.estado_torneo }}) · {{ jugadores|length }} jugadores (entre 5 y 10, máximo 2 docentes/funcionarios)</p>
+
+<form method="post" action="{{ url_for('equipos.editar', id_equipo=equipo.id_equipo) }}" class="tarjeta formulario">
+  <h2>Datos del equipo</h2>
+  <div class="fila">
+    <label>Nombre <input name="nombre" required maxlength="20" value="{{ equipo.nombre }}"></label>
+    <label>Capitán <select name="ci_capitan" required>
+      {% for j in jugadores %}<option value="{{ j.ci_jugador }}" {% if j.ci_jugador == equipo.ci_capitan %}selected{% endif %}>{{ j.apellido }}, {{ j.nombre }}</option>{% endfor %}
+    </select></label>
+  </div>
+  <div class="botones"><button class="primario">Guardar cambios</button></div>
+</form>
+
+<h2>Plantel</h2>
+<table>
+  <tr><th>N°</th><th>Jugador</th><th>Tipo</th><th></th></tr>
+  {% for j in jugadores %}
+  <tr>
+    <td>
+      {% if abierto %}
+      <form method="post" class="en-linea" action="{{ url_for('equipos.cambiar_camiseta', id_equipo=equipo.id_equipo, ci=j.ci_jugador) }}">
+        <input type="number" name="numero_camiseta" min="1" max="99" required value="{{ j.numero_camiseta }}" class="corto"><button class="link">✓</button>
+      </form>
+      {% else %}{{ j.numero_camiseta }}{% endif %}
+    </td>
+    <td>{{ j.apellido }}, {{ j.nombre }} {% if j.ci_jugador == equipo.ci_capitan %}<span class="etiqueta jugado">capitán</span>{% endif %}</td>
+    <td>{{ j.tipo }}</td>
+    <td class="acciones">
+      {% if abierto and j.ci_jugador != equipo.ci_capitan %}
+      <form method="post" action="{{ url_for('equipos.quitar_jugador', id_equipo=equipo.id_equipo, ci=j.ci_jugador) }}"><button class="link peligro">Quitar</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% if abierto %}
+<form method="post" action="{{ url_for('equipos.agregar_jugador', id_equipo=equipo.id_equipo) }}" class="tarjeta formulario">
+  <h2>Agregar jugador</h2>
+  {% if disponibles %}
+  <div class="fila">
+    <label>Jugador de {{ equipo.facultad }} <select name="ci_jugador" required>
+      {% for j in disponibles %}<option value="{{ j.ci_jugador }}">{{ j.apellido }}, {{ j.nombre }} ({{ j.tipo }})</option>{% endfor %}
+    </select></label>
+    <label>Camiseta <input type="number" name="numero_camiseta" required min="1" max="99"></label>
+  </div>
+  <div class="botones"><button class="primario">Agregar</button></div>
+  {% else %}
+  <p class="sutil">No quedan jugadores de {{ equipo.facultad }} libres en esta edición. Podés darlos de alta en <a href="{{ url_for('jugadores.formulario') }}">Jugadores</a>.</p>
+  {% endif %}
+</form>
+{% else %}
+<p class="aviso info">El torneo no está en inscripción: el plantel no se puede modificar.</p>
+{% endif %}
+{% endblock %}

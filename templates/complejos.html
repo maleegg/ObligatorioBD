@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="encabezado"><h1>Complejos y canchas</h1><a class="boton primario" href="{{ url_for('complejos.formulario') }}">+ Nuevo complejo</a></div>
+{% for c in complejos %}
+<section class="tarjeta">
+  <div class="encabezado">
+    <div><h2>{{ c.nombre }}</h2><p class="sutil">{{ c.direccion }} · {{ c.departamento }}</p></div>
+    <div class="acciones">
+      <a href="{{ url_for('complejos.cancha_formulario', id_complejo=c.id_complejo) }}">+ Cancha</a>
+      <a href="{{ url_for('complejos.formulario', id_complejo=c.id_complejo) }}">Editar</a>
+      <form method="post" action="{{ url_for('complejos.borrar', id_complejo=c.id_complejo) }}" onsubmit="return confirm('¿Eliminar este complejo?')"><button class="link peligro">Eliminar</button></form>
+    </div>
+  </div>
+  <table>
+    <tr><th>Cancha</th><th>Superficie</th><th>Techada</th><th></th></tr>
+    {% for k in c.canchas %}
+    <tr><td>{{ k.nombre_cancha }}</td><td>{{ k.superficie }}</td><td>{{ 'Sí' if k.techada else 'No' }}</td>
+      <td class="acciones">
+        <a href="{{ url_for('complejos.cancha_formulario', id_cancha=k.id_cancha) }}">Editar</a>
+        <form method="post" action="{{ url_for('complejos.cancha_borrar', id_cancha=k.id_cancha) }}" onsubmit="return confirm('¿Eliminar esta cancha?')"><button class="link peligro">Eliminar</button></form>
+      </td></tr>
+    {% else %}<tr><td colspan="4" class="sutil">Sin canchas todavía.</td></tr>{% endfor %}
+  </table>
+</section>
+{% else %}<p class="sutil">No hay complejos cargados.</p>{% endfor %}
+{% endblock %}
