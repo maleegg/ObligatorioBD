@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="encabezado"><h1>Jugadores</h1><a class="boton primario" href="{{ url_for('jugadores.formulario') }}">+ Nuevo jugador</a></div>
+<form class="buscador" method="get"><input name="buscar" maxlength="40" placeholder="Buscar por nombre, apellido o cédula" value="{{ buscar }}"><button>Buscar</button></form>
+<table>
+  <tr><th>Cédula</th><th>Nombre</th><th>Email</th><th>Nacimiento</th><th>Facultad</th><th>Tipo</th><th></th></tr>
+  {% for j in jugadores %}
+  <tr>
+    <td>{{ j.ci_jugador }}</td><td>{{ j.nombre }} {{ j.apellido }}</td><td>{{ j.email }}</td>
+    <td>{{ j.fecha_nacimiento|fecha_uy }}</td><td>{{ j.facultad }}</td><td>{{ j.tipo }}</td>
+    <td class="acciones">
+      <a href="{{ url_for('jugadores.formulario', ci=j.ci_jugador) }}">Editar</a>
+      <form method="post" action="{{ url_for('jugadores.borrar', ci=j.ci_jugador) }}" onsubmit="return confirm('¿Eliminar este jugador?')"><button class="link peligro">Eliminar</button></form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="7" class="sutil">No hay jugadores.</td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="encabezado"><h1>Torneos</h1><a class="boton primario" href="{{ url_for('torneos.formulario') }}">+ Nueva edición</a></div>
+<table>
+  <tr><th>Nombre</th><th>Año</th><th>Sem.</th><th>Inicio</th><th>Fin</th><th>Etapa</th><th>Equipos</th><th></th></tr>
+  {% for t in torneos %}
+  <tr>
+    <td>{{ t.nombre }}</td><td>{{ t.anio }}</td><td>{{ t.semestre }}</td>
+    <td>{{ t.fecha_inicio|fecha_uy }}</td><td>{{ t.fecha_fin|fecha_uy }}</td>
+    <td><span class="etiqueta {{ t.estado|replace(' ', '-') }}">{{ t.estado }}</span></td><td>{{ t.equipos }}</td>
+    <td class="acciones">
+      <a href="{{ url_for('torneos.formulario', id_torneo=t.id_torneo) }}">Editar</a>
+      <form method="post" action="{{ url_for('torneos.borrar', id_torneo=t.id_torneo) }}" onsubmit="return confirm('¿Eliminar este torneo?')"><button class="link peligro">Eliminar</button></form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="sutil">Los planteles solo se pueden armar mientras la edición está en <b>inscripción</b>. Pasala a <b>en curso</b> cuando empiecen los partidos.</p>
+{% endblock %}

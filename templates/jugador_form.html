@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set j = jugador or {} %}
+<h1>{{ 'Editar' if editando else 'Nuevo' }} jugador</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Cédula (sin puntos ni guión)
+    <input type="number" name="ci_jugador" required min="1" max="99999999" value="{{ j.get('ci_jugador', '') }}" {% if editando %}disabled{% endif %}>
+  </label>
+  <div class="fila">
+    <label>Nombre <input name="nombre" required maxlength="20" value="{{ j.get('nombre', '') }}"></label>
+    <label>Apellido <input name="apellido" required maxlength="40" value="{{ j.get('apellido', '') }}"></label>
+  </div>
+  <label>Email <input type="email" name="email" required maxlength="100" value="{{ j.get('email', '') }}"></label>
+  <label>Fecha de nacimiento <input type="date" name="fecha_nacimiento" required max="{{ hoy }}" value="{{ j.get('fecha_nacimiento', '') }}"></label>
+  <div class="fila">
+    <label>Facultad <select name="id_facultad" required>
+      <option value="">Elegí…</option>
+      {% for f in facultades %}<option value="{{ f.id_facultad }}" {% if j.get('id_facultad')|string == f.id_facultad|string %}selected{% endif %}>{{ f.nombre }}</option>{% endfor %}
+    </select></label>
+    <label>Tipo <select name="tipo" required>
+      {% for t in tipos %}<option {% if j.get('tipo') == t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select></label>
+  </div>
+  <div class="botones"><button class="primario">Guardar</button><a href="{{ url_for('jugadores.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set t = torneo or {} %}
+<h1>{{ 'Editar' if editando else 'Nueva' }} edición del torneo</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Nombre <input name="nombre" required maxlength="20" value="{{ t.get('nombre', '') }}"></label>
+  <div class="fila">
+    <label>Año <input type="number" name="anio" required min="2000" max="2100" value="{{ t.get('anio', '') }}"></label>
+    <label>Semestre <select name="semestre" required>
+      {% for s in (1, 2) %}<option value="{{ s }}" {% if t.get('semestre')|string == s|string %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select></label>
+  </div>
+  <div class="fila">
+    <label>Fecha de inicio <input type="date" name="fecha_inicio" required value="{{ t.get('fecha_inicio', '') }}"></label>
+    <label>Fecha de fin <input type="date" name="fecha_fin" required value="{{ t.get('fecha_fin', '') }}"></label>
+  </div>
+  <label>Etapa <select name="estado" required>
+    {% for e in estados %}<option {% if t.get('estado') == e %}selected{% endif %}>{{ e }}</option>{% endfor %}
+  </select></label>
+  <div class="botones"><button class="primario">Guardar</button><a href="{{ url_for('torneos.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}
