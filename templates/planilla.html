@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set p = partido %}
+<div class="encabezado"><h1>Planilla · Fecha {{ p.numero_fecha }}</h1><a href="{{ url_for('partidos.lista') }}">← Volver a partidos</a></div>
+<section class="tarjeta marcador-grande">
+  <div>{{ p.local }}</div><div class="goles">{{ p.goles_local }} – {{ p.goles_visitante }}</div><div>{{ p.visitante }}</div>
+</section>
+<p class="sutil">{{ p.dia|fecha_uy }} · {{ p.hora_inicio }}:00 a {{ p.hora_fin }}:00 · {{ p.nombre_cancha }} ({{ p.complejo }}) · <span class="etiqueta {{ p.estado }}">{{ p.estado }}</span></p>
+{% if p.estado == 'jugado' %}<p class="aviso info">El partido ya está marcado como jugado. Solo se puede corregir dentro de las 48 horas posteriores a su disputa.</p>{% endif %}
+
+<form method="post" action="{{ url_for('planillas.guardar_jugadores', id_partido=p.id_partido) }}">
+  <h2>1. ¿Quiénes jugaron?</h2>
+  <div class="dos-columnas">
+    {% for titulo, id_equipo, plantel in [(p.local, p.id_equipo_local, plantel_local), (p.visitante, p.id_equipo_visitante, plantel_visitante)] %}
+    <section class="tarjeta">
+      <h3>{{ titulo }}</h3>
+      {% for j in plantel %}
+      <label class="check {% if j.suspendido %}tachado{% endif %}">
+        <input type="checkbox" name="equipo_{{ id_equipo }}" value="{{ j.ci_jugador }}" {% if j.en_planilla %}checked{% endif %} {% if j.suspendido and not j.en_planilla %}disabled{% endif %}>
+        {{ j.numero_camiseta }}. {{ j.apellido }}, {{ j.nombre }} {% if j.suspendido %}<span class="etiqueta cancelado">suspendido</span>{% endif %}
+      </label>
+      {% endfor %}
+    </section>
+    {% endfor %}
+  </div>
+  <div class="botones"><button class="primario">Guardar planilla</button></div>
+</form>
+
+<div class="dos-columnas">
+  <section class="tarjeta">
+    <h2>2. Goles</h2>
+    <table>
+      {% for g in goles %}
+      <tr><td>{{ g.minuto }}'</td><td>{{ g.apellido }}, {{ g.nombre }} <span class="sutil">({{ g.equipo }})</span> {% if g.autogol %}<span class="etiqueta postergado">en contra</span>{% endif %}</td>
+        <td><form method="post" action="{{ url_for('planillas.borrar_gol', id_partido=p.id_partido, id_gol=g.id_gol) }}"><button class="link peligro">Borrar</button></form></td></tr>
+      {% else %}<tr><td class="sutil">Sin goles.</td></tr>{% endfor %}
+    </table>
+    {% if en_planilla %}
+    <form method="post" action="{{ url_for('planillas.agregar_gol', id_partido=p.id_partido) }}" class="formulario">
+      <label>Jugador <select name="ci_jugador" required>
+        {% for j in en_planilla %}<option value="{{ j.ci_jugador }}">{{ j.equipo }} — {{ j.apellido }}, {{ j.nombre }}</option>{% endfor %}
+      </select></label>
+      <div class="fila">
+        <label>Minuto <input type="number" name="minuto" required min="1" max="60"></label>
+        <label class="check"><input type="checkbox" name="autogol" value="1"> Gol en contra</label>
+      </div>
+      <button class="primario">Agregar gol</button>
+    </form>
+    {% else %}<p class="sutil">Primero marcá quiénes jugaron.</p>{% endif %}
+  </section>
+
+  <section class="tarjeta">
+    <h2>3. Tarjetas</h2>
+    <table>
+      {% for t in tarjetas %}
+      <tr><td>{{ t.minuto }}'</td><td><span class="tarjeta-color {{ t.color }}"></span> {{ t.apellido }}, {{ t.nombre }} <span class="sutil">({{ t.equipo }})</span></td>
+        <td><form method="post" action="{{ url_for('planillas.borrar_tarjeta', id_partido=p.id_partido, id_tarjeta=t.id_tarjeta) }}"><button class="link peligro">Borrar</button></form></td></tr>
+      {% else %}<tr><td class="sutil">Sin tarjetas.</td></tr>{% endfor %}
+    </table>
+    {% if en_planilla %}
+    <form method="post" action="{{ url_for('planillas.agregar_tarjeta', id_partido=p.id_partido) }}" class="formulario">
+      <label>Jugador <select name="ci_jugador" required>
+        {% for j in en_planilla %}<option value="{{ j.ci_jugador }}">{{ j.equipo }} — {{ j.apellido }}, {{ j.nombre }}</option>{% endfor %}
+      </select></label>
+      <div class="fila">
+        <label>Minuto <input type="number" name="minuto" required min="1" max="60"></label>
+        <label>Color <select name="color" required><option>amarilla</option><option>roja</option></select></label>
+      </div>
+      <button class="primario">Agregar tarjeta</button>
+    </form>
+    {% endif %}
+  </section>
+</div>
+
+{% if p.estado == 'programado' %}
+<form method="post" action="{{ url_for('planillas.marcar_jugado', id_partido=p.id_partido) }}" class="tarjeta" onsubmit="return confirm('¿Marcar el partido como jugado? Después solo se podrá corregir dentro de las 48 horas.')">
+  <h2>4. Cerrar el partido</h2>
+  <p class="sutil">Cuando la planilla esté completa, marcá el partido como jugado para que cuente en la tabla de posiciones.</p>
+  <button class="primario">Marcar como jugado</button>
+</form>
+{% endif %}
+{% endblock %}
