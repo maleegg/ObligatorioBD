@@ -3,7 +3,7 @@ services:
     image: mysql:8.0
     container_name: torneo_mysql_db
     restart: always
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_spanish_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_spanish_ci --default-time-zone=-03:00
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword123
     ports:
@@ -25,6 +25,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      - PYTHONUNBUFFERED=1
       - DB_HOST=db
       - DB_PORT=3306
       - DB_NAME=OBLIGATORIO
@@ -34,6 +35,7 @@ services:
       - DB_ADMIN_PASSWORD=Admin_Torneo_2026!
       - DB_PLANILLERO_USER=planillero_torneo
       - DB_PLANILLERO_PASSWORD=Planillero_2026!
+      - SECRET_KEY=torneo-ucu-clave-de-sesion-2026
     ports:
       - "5001:5000"
 
