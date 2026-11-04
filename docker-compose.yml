@@ -1,22 +1,21 @@
-version: '3.8'
-
 services:
   db:
     image: mysql:8.0
     container_name: torneo_mysql_db
     restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_spanish_ci
     environment:
-      MYSQL_DATABASE: torneo_interfacultades
       MYSQL_ROOT_PASSWORD: rootpassword123
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./db:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-prootpassword123"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   app:
     build: .
@@ -27,10 +26,16 @@ services:
         condition: service_healthy
     environment:
       - DB_HOST=db
-      - DB_USER=root
-      - DB_PASSWORD=rootpassword123
-      - DB_NAME=torneo_interfacultades
       - DB_PORT=3306
+      - DB_NAME=OBLIGATORIO
+      - DB_LOGIN_USER=login_app
+      - DB_LOGIN_PASSWORD=LoginApp_2026!
+      - DB_ADMIN_USER=admin_torneo
+      - DB_ADMIN_PASSWORD=Admin_Torneo_2026!
+      - DB_PLANILLERO_USER=planillero_torneo
+      - DB_PLANILLERO_PASSWORD=Planillero_2026!
+    ports:
+      - "5001:5000"
 
 volumes:
   mysql_data:

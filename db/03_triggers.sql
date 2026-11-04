@@ -1,9 +1,11 @@
 USE OBLIGATORIO;
 SET NAMES utf8mb4;
- 
+
+ -- TRIGGER 1: validacion al programar un partido (misma edicion, minimo 5 jugadores, sin rival repetido, un partido por fecha)
+ -- usa $$ como delimitador para poder usar ; dentro del trigger
+
 DROP TRIGGER IF EXISTS trg_partido_valida_equipos;
  
--- usa $$ como delimitador para poder usar ; dentro del trigger
 DELIMITER $$
  
 CREATE TRIGGER trg_partido_valida_equipos
@@ -70,8 +72,8 @@ BEGIN                           -- abre el bloque de codigo del trigger
     END IF;
 END$$                           -- cierra el trigger
  
--- vuelve al delimitador por defecto (;)
 DELIMITER ;
+-- vuelve al delimitador por defecto (;)
 
 -- TRIGGER 2: una cancha no puede tener mas de un partido en el mismo dia y turno
 
