@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="encabezado"><h1>Sanciones</h1><a class="boton primario" href="{{ url_for('sanciones.formulario') }}">+ Nueva sanción</a></div>
+<p class="sutil">Las sanciones por tarjeta roja y por acumular 3 amarillas se generan solas al cargar la tarjeta. Acá podés agregar disciplinarias o corregir.</p>
+<table>
+  <tr><th>Jugador</th><th>Equipo</th><th>Motivo</th><th>Fechas que abarca</th><th></th></tr>
+  {% for s in sanciones %}
+  <tr>
+    <td>{{ s.apellido }}, {{ s.nombre }}</td><td>{{ s.equipo or '—' }}</td><td>{{ s.motivo }}</td>
+    <td>{% if s.cantidad_fechas == 1 %}Fecha {{ s.numero_fecha_inicio }}{% else %}Fechas {{ s.numero_fecha_inicio }} a {{ s.fecha_fin }}{% endif %}</td>
+    <td class="acciones">
+      <a href="{{ url_for('sanciones.formulario', id_sancion=s.id_sancion) }}">Editar</a>
+      <form method="post" action="{{ url_for('sanciones.borrar', id_sancion=s.id_sancion) }}" onsubmit="return confirm('¿Eliminar esta sanción?')"><button class="link peligro">Eliminar</button></form>
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="5" class="sutil">No hay sanciones en esta edición.</td></tr>{% endfor %}
+</table>
+{% endblock %}

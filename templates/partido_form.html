@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set p = partido or {} %}
+<h1>{{ 'Editar' if editando else 'Programar' }} partido · {{ torneo.nombre }}</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Número de fecha <input type="number" name="numero_fecha" required min="1" max="50" value="{{ p.get('numero_fecha', '') }}"></label>
+  <div class="fila">
+    <label>Local <select name="id_equipo_local" required>
+      <option value="">Elegí…</option>
+      {% for e in equipos %}<option value="{{ e.id_equipo }}" {% if p.get('id_equipo_local')|string == e.id_equipo|string %}selected{% endif %}>{{ e.nombre }}</option>{% endfor %}
+    </select></label>
+    <label>Visitante <select name="id_equipo_visitante" required>
+      <option value="">Elegí…</option>
+      {% for e in equipos %}<option value="{{ e.id_equipo }}" {% if p.get('id_equipo_visitante')|string == e.id_equipo|string %}selected{% endif %}>{{ e.nombre }}</option>{% endfor %}
+    </select></label>
+  </div>
+  <label>Cancha <select name="id_cancha" required>
+    <option value="">Elegí…</option>
+    {% for c in canchas %}<option value="{{ c.id_cancha }}" {% if p.get('id_cancha')|string == c.id_cancha|string %}selected{% endif %}>{{ c.complejo }} — {{ c.nombre_cancha }}</option>{% endfor %}
+  </select></label>
+  <div class="fila">
+    <label>Día <input type="date" name="dia" required min="{{ torneo.fecha_inicio }}" max="{{ torneo.fecha_fin }}" value="{{ p.get('dia', '') }}"></label>
+    <label>Turno <select name="id_turno" required>
+      {% for t in turnos %}<option value="{{ t.id_turno }}" {% if p.get('id_turno')|string == t.id_turno|string %}selected{% endif %}>{{ t.hora_inicio }}:00 a {{ t.hora_fin }}:00</option>{% endfor %}
+    </select></label>
+  </div>
+  <label>Estado <select name="estado" required>
+    {% for e in estados %}<option {% if p.get('estado') == e %}selected{% endif %}>{{ e }}</option>{% endfor %}
+  </select></label>
+  <p class="sutil">El sistema controla que ambos equipos tengan al menos 5 jugadores, que no se repita el cruce en la edición, que ningún equipo juegue dos veces en la misma fecha y que la cancha esté libre en ese día y turno. Para marcarlo como jugado, usá la planilla.</p>
+  <div class="botones"><button class="primario">Guardar</button><a href="{{ url_for('partidos.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}

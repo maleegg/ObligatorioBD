@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block contenido %}
+<div class="encabezado"><h1>Partidos</h1>
+  {% if session.rol == 'administrador' %}<a class="boton primario" href="{{ url_for('partidos.formulario') }}">+ Programar partido</a>{% endif %}
+</div>
+<table>
+  <tr><th>Fecha</th><th>Día</th><th>Hora</th><th>Cancha</th><th>Partido</th><th>Estado</th><th></th></tr>
+  {% for p in partidos %}
+  <tr>
+    <td>{{ p.numero_fecha }}</td><td>{{ p.dia|fecha_uy }}</td><td>{{ p.hora_inicio }}:00</td>
+    <td>{{ p.nombre_cancha }} <span class="sutil">({{ p.complejo }})</span></td>
+    <td>{{ p.local }} <b class="marcador">{% if p.estado == 'jugado' or p.goles_local or p.goles_visitante %}{{ p.goles_local }} – {{ p.goles_visitante }}{% else %}vs{% endif %}</b> {{ p.visitante }}</td>
+    <td><span class="etiqueta {{ p.estado }}">{{ p.estado }}</span></td>
+    <td class="acciones">
+      {% if p.estado in ('programado', 'jugado') and p.ya_paso %}<a href="{{ url_for('planillas.ver', id_partido=p.id_partido) }}">Planilla</a>{% endif %}
+      {% if session.rol == 'administrador' and p.estado != 'jugado' %}
+        <a href="{{ url_for('partidos.formulario', id_partido=p.id_partido) }}">Editar</a>
+        <form method="post" action="{{ url_for('partidos.borrar', id_partido=p.id_partido) }}" onsubmit="return confirm('¿Eliminar este partido?')"><button class="link peligro">Eliminar</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="7" class="sutil">No hay partidos en esta edición.</td></tr>{% endfor %}
+</table>
+{% endblock %}

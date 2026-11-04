@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block contenido %}
+{% set s = sancion or {} %}
+<h1>{{ 'Editar' if editando else 'Nueva' }} sanción</h1>
+<form method="post" class="tarjeta formulario">
+  <label>Jugador <select name="ci_jugador" required>
+    <option value="">Elegí…</option>
+    {% for j in jugadores %}<option value="{{ j.ci_jugador }}" {% if s.get('ci_jugador')|string == j.ci_jugador|string %}selected{% endif %}>{{ j.equipo }} — {{ j.apellido }}, {{ j.nombre }}</option>{% endfor %}
+  </select></label>
+  <label>Motivo <select name="motivo" required>
+    {% for m in motivos %}<option {% if s.get('motivo', 'disciplinaria') == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+  </select></label>
+  <div class="fila">
+    <label>Desde la fecha N° <input type="number" name="numero_fecha_inicio" required min="1" max="50" value="{{ s.get('numero_fecha_inicio', '') }}"></label>
+    <label>Cantidad de fechas <input type="number" name="cantidad_fechas" required min="1" max="50" value="{{ s.get('cantidad_fechas', 1) }}"></label>
+  </div>
+  <div class="botones"><button class="primario">Guardar</button><a href="{{ url_for('sanciones.lista') }}">Cancelar</a></div>
+</form>
+{% endblock %}
