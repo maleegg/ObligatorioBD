@@ -3,12 +3,12 @@ CREATE DATABASE OBLIGATORIO DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_spanis
 USE OBLIGATORIO;
 SET NAMES utf8mb4;
 
--- Los CHECK son la ultima capa de validacion: aunque alguien se saltee la app,
+-- Los CHECK son la ultima capa de validación: aunque alguien se saltee la app,
 -- la base no acepta datos imposibles (minutos negativos, turnos fuera de horario, etc.)
 
 CREATE TABLE login (
                        correo VARCHAR(100) PRIMARY KEY,
-                       contrasena VARCHAR(255) NOT NULL,          -- se guarda el hash, nunca la contrasena real
+                       contrasena VARCHAR(255) NOT NULL,          -- se guarda el hash, nunca la contraseña real
                        rol ENUM('administrador', 'planillero') NOT NULL,
                        CHECK (correo LIKE '%_@_%._%')
 );
@@ -39,7 +39,7 @@ CREATE TABLE torneo (
                         fecha_inicio DATE NOT NULL,
                         fecha_fin DATE NOT NULL,
                         estado ENUM ('inscripcion' , 'en curso' , 'finalizado') NOT NULL,
-                        UNIQUE (anio, semestre),                  -- una edicion por semestre
+                        UNIQUE (anio, semestre),                  -- una edición por semestre
                         CHECK (semestre IN (1, 2)),
                         CHECK (anio BETWEEN 2000 AND 2100),
                         CHECK (fecha_fin >= fecha_inicio)
@@ -62,7 +62,7 @@ CREATE TABLE equipo_jugador_torneo (
                                        ci_jugador INT NOT NULL,
                                        id_torneo INT NOT NULL,
                                        numero_camiseta INT NOT NULL,
-                                       PRIMARY KEY (id_torneo, ci_jugador),      -- un jugador, un solo equipo por edicion
+                                       PRIMARY KEY (id_torneo, ci_jugador),      -- un jugador, un solo equipo por edición
                                        UNIQUE (id_equipo, numero_camiseta),      -- no se repite el numero dentro del equipo
                                        CHECK (numero_camiseta BETWEEN 1 AND 99),
                                        FOREIGN KEY (id_equipo) REFERENCES equipo(id_equipo),
@@ -94,8 +94,8 @@ CREATE TABLE turno (
                        UNIQUE (hora_inicio),
                        CHECK (hora_fin > hora_inicio),
                        CHECK (hora_inicio >= 18 AND hora_fin <= 23),  -- turnos entre las 18 y las 23
-                       CHECK (hora_fin = hora_inicio + 1)             -- turnos de una hora
-);
+                       CHECK (hora_fin = hora_inicio + 1)             
+                       );
 
 CREATE TABLE partido(
                         id_partido INT AUTO_INCREMENT PRIMARY KEY,

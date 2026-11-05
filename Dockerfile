@@ -6,7 +6,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el codigo de la aplicacion
+# Copiar el código de la aplicacion
 COPY . .
 
 # Flask escucha en el puerto 5000 dentro del contenedor

@@ -1,6 +1,6 @@
 """Punto de entrada de la aplicacion web (Flask).
 
-Flask hace de backend y de frontend: el navegador pide una pagina, Python consulta MySQL
+Flask hace de backend y de frontend: el navegador pide una página, Python consulta MySQL
 y devuelve el HTML ya armado (plantillas en la carpeta templates/).
 """
 import os
@@ -18,7 +18,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "cambiar-esta-clave-en-produccion")
 app.teardown_appcontext(cerrar_conexion)
 
-# Cada seccion vive en su propio archivo dentro de rutas/
+# Cada sección vive en su propio archivo dentro de rutas/
 from rutas.torneos import bp as bp_torneos          # noqa: E402
 from rutas.jugadores import bp as bp_jugadores      # noqa: E402
 from rutas.equipos import bp as bp_equipos          # noqa: E402
@@ -35,7 +35,7 @@ for blueprint in (bp_torneos, bp_jugadores, bp_equipos, bp_complejos,
 
 @app.context_processor
 def datos_comunes():
-    """Datos que necesita la barra superior en todas las paginas."""
+    """Datos que necesita la barra superior en todas las páginas."""
     if "rol" not in session:
         return {}
     try:
@@ -52,7 +52,7 @@ def login():
         v.email("correo", "Correo")
         v.texto("contrasena", "Contrasena", 100)
         if v.ok:
-            # Para verificar credenciales se usa login_app, que SOLO puede leer la tabla login
+            # Para verificar credenciales se usa login_app, que solo puede leer la tabla login
             cnx = nueva_conexion("login")
             try:
                 cursor = cnx.cursor(dictionary=True)

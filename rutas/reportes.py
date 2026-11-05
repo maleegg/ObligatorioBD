@@ -1,5 +1,5 @@
 """Reportes pedidos en la letra + 3 consultas propias. Son las mismas de Consultas.sql,
-pero con el torneo (y la fecha) como parametro en lugar de un numero fijo."""
+pero con el torneo (y la fecha) como parametro en lugar de un número fijo."""
 from flask import Blueprint, render_template, request
 
 from db import conexion, consultar_uno

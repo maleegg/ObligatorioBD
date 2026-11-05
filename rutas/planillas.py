@@ -1,4 +1,4 @@
-"""Registro de la planilla de juego: quienes jugaron, goles y tarjetas. Lo usan planilleros y administradores.
+"""Registro de la planilla de juego: quiénes jugaron, goles y tarjetas. Lo usan planilleros y administradores.
 La base de datos controla: plantel, suspendidos, que el jugador figure en la planilla, ventana de 48 horas
 y genera las sanciones automaticas por tarjetas."""
 from flask import Blueprint, flash, redirect, render_template, request, url_for

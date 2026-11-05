@@ -1,7 +1,7 @@
-"""Conexion a MySQL, todas las consultas se escriben en SQL.
+"""Conexión a MySQL, todas las consultas se escriben en SQL.
 
 Cada rol de la app se conecta con su propio usuario de base de datos:
-  - login_app          -> solo lee la tabla login (para verificar correo y contrasena)
+  - login_app          -> solo lee la tabla login (para verificar correo y contraseña)
   - admin_torneo       -> gestiona todos los datos
   - planillero_torneo  -> solo carga planillas, goles y tarjetas
 Asi, aunque hubiera un error en la app, la base no deja que un planillero haga cosas de administrador.
@@ -19,7 +19,7 @@ CONFIG_BASE = {
     "charset": "utf8mb4",
     "collation": "utf8mb4_spanish_ci",
     "autocommit": False,
-    "use_pure": True,  # misma implementacion en cualquier maquina (la que se probo)
+    "use_pure": True,  # misma implementación en cualquier máquina (la que se probó)
 }
 
 USUARIOS_BD = {
@@ -33,7 +33,7 @@ def nueva_conexion(rol):
     usuario, clave = USUARIOS_BD[rol]
     cnx = mysql.connector.connect(user=usuario, password=clave, **CONFIG_BASE)
     cursor = cnx.cursor()
-    # Uruguay es UTC-3 todo el ano. Las reglas "el partido ya paso" y "48 horas" usan NOW().
+    # Uruguay es UTC-3 todo el año. Las reglas "el partido ya pasó" y "48 horas" usan NOW().
     cursor.execute("SET time_zone = '-03:00'")
     cursor.close()
     return cnx
@@ -50,7 +50,7 @@ def cerrar_conexion(_error=None):
     cnx = g.pop("cnx", None)
     if cnx is not None:
         try:
-            cnx.rollback()  # si algo quedo a medias, no se guarda
+            cnx.rollback()  # si algo quedó a medias, no se guarda
         finally:
             cnx.close()
 
@@ -97,7 +97,7 @@ def mensaje_error(e: Error) -> str:
     if e.errno in (errorcode.ER_NO_REFERENCED_ROW, errorcode.ER_NO_REFERENCED_ROW_2):
         return "Se hace referencia a un dato que no existe."
     if e.errno in (errorcode.ER_TABLEACCESS_DENIED_ERROR, errorcode.ER_COLUMNACCESS_DENIED_ERROR):
-        return "Tu usuario no tiene permiso para hacer esta operacion."
+        return "Tu usuario no tiene permiso para hacer esta operación."
     if e.errno in (3819, 4025):  # CHECK violado (MySQL / MariaDB)
-        return "Algun dato no cumple las reglas de validacion de la base de datos."
+        return "Algun dato no cumple las reglas de validación de la base de datos."
     return f"Error de base de datos: {e.msg}"

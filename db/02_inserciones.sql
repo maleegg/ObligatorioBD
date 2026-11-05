@@ -1,8 +1,8 @@
 USE OBLIGATORIO;
 SET NAMES utf8mb4;
 
--- Las contrasenas se guardan como hash (PBKDF2-SHA256 con sal), no en texto plano.
--- Contrasenas reales para probar: admin@ucu.edu.uy -> admin123 | planillero@ucu.edu.uy -> plan123
+-- Las contraseñas se guardan como hash (PBKDF2-SHA256 con sal), no en texto plano.
+-- Contraseñas reales para probar: admin@ucu.edu.uy -> admin123 | planillero@ucu.edu.uy -> plan123
 INSERT INTO login (correo, contrasena, rol) VALUES
                                                 ('admin@ucu.edu.uy', 'pbkdf2:sha256:1000000$n8WWMbPcQxcuOlmn$b095bde6d85f30c920c399633f967d62281d7fbebc5da407597b580003faaab8', 'administrador'),
                                                 ('planillero@ucu.edu.uy', 'pbkdf2:sha256:1000000$3UbgETab2sp3ETtO$6d89581c9625011a06deed843ea34d5b1c1487d121b8f1265fba258e277a23a6', 'planillero');
@@ -55,7 +55,7 @@ INSERT INTO jugador (ci_jugador, nombre, apellido, email, fecha_nacimiento, id_f
 
 INSERT INTO torneo (nombre, anio, semestre, fecha_inicio, fecha_fin, estado) VALUES
     ('Torneo 2026-2', 2026, 2, '2026-10-01', '2026-11-30', 'en curso'),
-    -- segunda edicion en etapa de inscripcion: sirve para probar el armado de equipos y planteles
+    -- segunda edición en etapa de inscripción: sirve para probar el armado de equipos y planteles
     ('Torneo 2027-1', 2027, 1, '2027-03-15', '2027-06-30', 'inscripcion');
 
 INSERT INTO equipo (nombre, id_torneo, id_facultad, ci_capitan) VALUES

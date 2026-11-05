@@ -1,4 +1,4 @@
-"""ABM de sanciones. Las de tarjeta roja y acumulacion de amarillas las crea la base automaticamente;
+"""ABM de sanciones. Las de tarjeta roja y acumulación de amarillas las crea la base automáticamente;
 el administrador puede ademas cargar sanciones disciplinarias de varias fechas (o corregir cualquiera)."""
 from flask import Blueprint, redirect, render_template, request, url_for
 
@@ -7,7 +7,7 @@ from utiles import intentar, mostrar_errores, solo_admin, torneo_activo
 from validaciones import Validador
 
 bp = Blueprint("sanciones", __name__, url_prefix="/sanciones")
-MOTIVOS = ("roja", "acumulacion de amarillas", "disciplinaria")
+MOTIVOS = ("roja", "acumulación de amarillas", "disciplinaria")
 
 
 @bp.route("/")

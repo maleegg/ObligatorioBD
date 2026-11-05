@@ -18,12 +18,12 @@ def login_requerido(vista):
 
 
 def solo_admin(vista):
-    """Paginas solo para administradores. (La base igual lo impediria por permisos.)"""
+    """Páginas solo para administradores. (La base igual lo impediría por permisos.)"""
     @wraps(vista)
     @login_requerido
     def envoltura(*args, **kwargs):
         if session.get("rol") != "administrador":
-            flash("Esa seccion es solo para administradores.", "error")
+            flash("Esa sección es solo para administradores.", "error")
             return redirect(url_for("inicio"))
         return vista(*args, **kwargs)
     return envoltura
@@ -42,7 +42,7 @@ def torneo_activo():
 
 
 def intentar(accion, mensaje_ok):
-    """Ejecuta 'accion' (que hace INSERT/UPDATE/DELETE) como una sola transaccion.
+    """Ejecuta 'accion' (que hace INSERT/UPDATE/DELETE) como una sola transacción.
     Si la base rechaza algo (trigger, CHECK, clave repetida...), se deshace todo y se muestra el motivo."""
     try:
         accion()

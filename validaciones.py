@@ -1,8 +1,8 @@
-"""Validacion de campos en el backend (la segunda de las tres capas).
+"""Validación de campos en el backend (la segunda de las tres capas).
 
 1) Front-end: los formularios HTML tienen required, min, max, maxlength, pattern...
 2) Back-end (este archivo): se vuelve a revisar todo, porque el navegador se puede saltear.
-3) Base de datos: tipos, NOT NULL, UNIQUE, CHECK, claves foraneas y triggers.
+3) Base de datos: tipos, NOT NULL, UNIQUE, CHECK, claves foráneas y triggers.
 
 Uso:
     v = Validador(request.form)

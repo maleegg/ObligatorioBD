@@ -1,4 +1,4 @@
-"""ABM de ediciones del torneo (necesario para pasar de inscripcion a en curso y a finalizado)."""
+"""ABM de ediciones del torneo (necesario para pasar de inscripción a en curso y a finalizado)."""
 from flask import Blueprint, redirect, render_template, request, url_for
 
 from db import consultar, consultar_uno, ejecutar

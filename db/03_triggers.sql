@@ -1,7 +1,7 @@
 USE OBLIGATORIO;
 SET NAMES utf8mb4;
 
- -- TRIGGER 1: validacion al programar un partido (misma edicion, minimo 5 jugadores, sin rival repetido, un partido por fecha)
+ -- TRIGGER 1: validación al programar un partido (misma edición, mínimo 5 jugadores, sin rival repetido, un partido por fecha)
  -- usa $$ como delimitador para poder usar ; dentro del trigger
 
 DROP TRIGGER IF EXISTS trg_partido_valida_equipos;
@@ -10,15 +10,15 @@ DELIMITER $$
 
 CREATE TRIGGER trg_partido_valida_equipos
 BEFORE INSERT ON partido        -- se ejecuta antes de insertar un partido
-FOR EACH ROW                    -- ejecuta la validacion para cada fila que se inserta
-BEGIN                           -- abre el bloque de codigo del trigger
+FOR EACH ROW                    -- ejecuta la validación para cada fila que se inserta
+BEGIN                           -- abre el bloque de código del trigger
     -- crea variables temporales para guardar el torneo y la cantidad de jugadores de cada equipo
     DECLARE v_torneo_local INT;
     DECLARE v_torneo_visitante INT;
     DECLARE v_jugadores_local INT;
     DECLARE v_jugadores_visitante INT;
 
--- REGLA 1: Misma edicion del torneo: ambos equipos deben pertenecer al mismo torneo que el partido.
+-- REGLA 1: Misma edición del torneo: ambos equipos deben pertenecer al mismo torneo que el partido.
     -- busca el torneo del equipo local y lo guarda en la variable. NEW es la fila que se esta por insertar.
     SELECT id_torneo INTO v_torneo_local
     FROM equipo WHERE id_equipo = NEW.id_equipo_local;
@@ -29,10 +29,10 @@ BEGIN                           -- abre el bloque de codigo del trigger
     -- si alguno de los dos equipos no pertenece al torneo del partido, se lanza un error y se cancela la insercion
     IF v_torneo_local <> NEW.id_torneo OR v_torneo_visitante <> NEW.id_torneo THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Ambos equipos deben pertenecer a la edicion del torneo del partido';
+            SET MESSAGE_TEXT = 'Ambos equipos deben pertenecer a la edición del torneo del partido';
     END IF;
 
--- REGLA 2: Minimo de 5 jugadores por equipo: ambos equipos deben tener al menos 5 jugadores en su plantel.
+-- REGLA 2: mínimo de 5 jugadores por equipo: ambos equipos deben tener al menos 5 jugadores en su plantel.
     SELECT COUNT(*) INTO v_jugadores_local
     FROM equipo_jugador_torneo WHERE id_equipo = NEW.id_equipo_local;
 
@@ -44,17 +44,17 @@ BEGIN                           -- abre el bloque de codigo del trigger
             SET MESSAGE_TEXT = 'Ambos equipos deben tener al menos 5 jugadores en su plantel';
     END IF;
 
--- REGLA 3: Sin rival repetido: dos equipos no pueden enfrentarse dos veces en la misma edicion (salvo si el partido esta cancelado).
+-- REGLA 3: Sin rival repetido: dos equipos no pueden enfrentarse dos veces en la misma edición (salvo si el partido está cancelado).
     IF EXISTS (                                 -- es verdadero si la subconsulta devuelve al menos una fila
         SELECT 1 FROM partido
-        WHERE id_torneo = NEW.id_torneo         -- mira solo los partidos de la misma edicion del torneo
+        WHERE id_torneo = NEW.id_torneo         -- mira solo los partidos de la misma edición del torneo
           AND estado <> 'cancelado'             -- ignora los partidos cancelados
           -- busca el mismo cruce en cualquiera de los dos sentidos: si ya jugo A contra B, no se permite B contra A
           AND ((id_equipo_local = NEW.id_equipo_local AND id_equipo_visitante = NEW.id_equipo_visitante)
             OR (id_equipo_local = NEW.id_equipo_visitante AND id_equipo_visitante = NEW.id_equipo_local))
     ) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'Estos equipos ya tienen un partido en esta edicion';
+            SET MESSAGE_TEXT = 'Estos equipos ya tienen un partido en esta edición';
     END IF;
 
 -- REGLA 4: Un partido por fecha: un equipo no puede jugar dos partidos en la misma fecha del torneo.
@@ -117,7 +117,7 @@ END$$
 
 DELIMITER ;
 
--- TRIGGER 3: validacion de la planilla de juego
+-- TRIGGER 3: validación de la planilla de juego
 
 DROP TRIGGER IF EXISTS trg_planilla_valida_jugador;
 
@@ -169,7 +169,7 @@ DELIMITER ;
 -- =====================================================================================
 -- REGLAS EXTRA 
 -- Los procedimientos (sp_...) agrupan validaciones que usan varios triggers,
--- asi la misma regla no se escribe dos veces. Un trigger puede llamar a un procedimiento con CALL.
+-- así la misma regla no se escribe dos veces. Un trigger puede llamar a un procedimiento con CALL.
 -- La hora de "ahora" se toma de NOW(), que usa la zona horaria de Uruguay (-03:00).
 -- =====================================================================================
 
@@ -205,9 +205,9 @@ DROP TRIGGER IF EXISTS trg_sancion_update;
 DELIMITER $$
 
 -- -------------------------------------------------------------------------------------
--- PLANTELES: tienen entre 5 y 10 jugadores, todos de la facultad del equipo, maximo 2
+-- PLANTELES: tienen entre 5 y 10 jugadores, todos de la facultad del equipo, máximo 2
 -- docentes/funcionarios, y solo se modifican mientras el torneo esta en inscripcion.
--- (El minimo de 5 se exige al programar un partido, en el TRIGGER 1.)
+-- (El mínimo de 5 se exige al programar un partido, en el TRIGGER 1.)
 -- p_excluir_ci: en un UPDATE excluye a jugadores de la fila vieja, para no contarlos dos veces.
 -- -------------------------------------------------------------------------------------
 CREATE PROCEDURE sp_validar_plantel(IN p_equipo INT, IN p_ci INT, IN p_torneo INT, IN p_excluir_ci INT)
@@ -279,11 +279,11 @@ CREATE TRIGGER trg_plantel_update
 BEFORE UPDATE ON equipo_jugador_torneo
 FOR EACH ROW
 BEGIN
-    -- el capitan no puede salir de su equipo
+    -- el capitán no puede salir de su equipo
     IF (NEW.id_equipo <> OLD.id_equipo OR NEW.ci_jugador <> OLD.ci_jugador)
        AND EXISTS (SELECT 1 FROM equipo WHERE id_equipo = OLD.id_equipo AND ci_capitan = OLD.ci_jugador) THEN
         SIGNAL SQLSTATE '45000'
-            SET MESSAGE_TEXT = 'No se puede sacar al capitan del plantel: primero elija otro capitan';
+            SET MESSAGE_TEXT = 'No se puede sacar al capitán del plantel: primero elija otro capitán';
     END IF;
     -- si sigue en el mismo equipo no se cuenta dos veces
     IF NEW.id_equipo = OLD.id_equipo THEN
@@ -304,7 +304,7 @@ BEGIN
 END$$
 
 -- -------------------------------------------------------------------------------------
--- EQUIPOS: se inscriben durante la inscripcion, el capitan es de la facultad del equipo
+-- EQUIPOS: se inscriben durante la inscripción, el capitan es de la facultad del equipo
 -- y no esta en otro equipo de esa edicion. Al cambiar de capitan, el nuevo debe estar
 -- en el plantel. 
 -- -------------------------------------------------------------------------------------
@@ -433,8 +433,8 @@ CREATE TRIGGER trg_partido_update
 BEFORE UPDATE ON partido
 FOR EACH ROW
 BEGIN
-    -- un partido jugado no cambia de estado, asi tampoco se puede cancelar y luego borrar,
-    -- tampoco cambia de equipos, fecha, dia, turno o cancha. Su resultado se corrige con los goles.
+    -- un partido jugado no cambia de estado, así tampoco se puede cancelar y luego borrar,
+    -- tampoco cambia de equipos, fecha, día, turno o cancha. Su resultado se corrige con los goles.
     IF OLD.estado = 'jugado' THEN
         IF NEW.estado <> 'jugado' THEN
             SIGNAL SQLSTATE '45000'
@@ -468,7 +468,7 @@ END$$
 -- -------------------------------------------------------------------------------------
 -- PLANILLA, GOLES Y TARJETAS
 -- estos datos se cargan una vez jugado el partido, nunca en partidos
--- cancelados o postergados, y si el partido ya esta marcado como jugado solo dentro
+-- cancelados o postergados, y si el partido ya está marcado como jugado solo dentro
 -- de las 48 horas posteriores a su disputa.
 -- -------------------------------------------------------------------------------------
 CREATE PROCEDURE sp_validar_carga_partido(IN p_id_partido INT)
@@ -567,7 +567,7 @@ BEGIN
     CALL sp_validar_en_planilla(NEW.id_partido, NEW.ci_jugador);
 END$$
 
--- Cambiar de jugador, partido o color altera las sanciones automaticas: se borra y se vuelve a cargar
+-- Cambiar de jugador, partido o color altera las sanciones automáticas: se borra y se vuelve a cargar
 CREATE TRIGGER trg_tarjeta_update
 BEFORE UPDATE ON tarjeta
 FOR EACH ROW
@@ -586,7 +586,7 @@ BEGIN
     CALL sp_validar_carga_partido(OLD.id_partido);
 END$$
 
--- SANCION AUTOMATICA: roja -> 1 fecha; cada 3 amarillas en la edicion -> 1 fecha.
+-- SANCIÓN AUTOMATICA: roja -> 1 fecha; cada 3 amarillas en la edicion -> 1 fecha.
 -- Se cumple en la fecha siguiente a la del partido.
 CREATE TRIGGER trg_tarjeta_sancion_automatica
 AFTER INSERT ON tarjeta
@@ -617,7 +617,7 @@ BEGIN
     END IF;
 END$$
 
--- Si se borra una tarjeta cargada por error, se quita la sancion automatica que habia generado
+-- Si se borra una tarjeta cargada por error, se quita la sancion automática que habáa generado
 CREATE TRIGGER trg_tarjeta_quitar_sancion
 AFTER DELETE ON tarjeta
 FOR EACH ROW
@@ -657,7 +657,7 @@ BEGIN
 END$$
 
 -- -------------------------------------------------------------------------------------
--- SANCIONES: solo para jugadores inscriptos en algun plantel de esa edicion
+-- SANCIONES: solo para jugadores inscriptos en algun plantel de esa edición
 -- -------------------------------------------------------------------------------------
 CREATE PROCEDURE sp_validar_jugador_en_torneo(IN p_ci INT, IN p_torneo INT)
 BEGIN
@@ -686,7 +686,7 @@ DELIMITER ;
 
 -- -------------------------------------------------------------------------------------
 -- JUGADORES: al editar un jugador no se pueden romper las reglas de su plantel, o sea
---que sea de la facultad del equipo y que haya maximo 2 docentes/funcionarios por plantel
+--que sea de la facultad del equipo y que haya máximo 2 docentes/funcionarios por plantel
 -- -------------------------------------------------------------------------------------
 DROP TRIGGER IF EXISTS trg_jugador_update;
 DROP TRIGGER IF EXISTS trg_partido_con_planilla;

@@ -4,14 +4,14 @@ Sistema web para organizar el torneo: equipos, jugadores, partidos, planillas, s
 
 ---
 
-## ¿Cómo funciona? (en 30 segundos)
+## ¿Cómo funciona?
 
 El proyecto tiene dos partes:
 
-- **La base de datos (MySQL):** el "archivero" donde se guarda todo (jugadores, partidos, goles...).
-- **La aplicación (Python):** la "ventanilla" que ves en el navegador, donde tocás botones.
+- **La base de datos (MySQL):** el lugar donde se guarda todo (jugadores, partidos, goles, etc.).
+- **La aplicación (Python):** la "ventanilla" que se ve en el navegador.
 
-**Docker** es el programa que arma y prende esas dos partes por vos con un solo comando.
+**Docker** es el programa que arma y prende esas dos partes con un solo comando.
 
 ---
 
@@ -23,7 +23,7 @@ El proyecto tiene dos partes:
 2. Si tenés Mac, te pregunta qué tipo. Para saberlo, tocá la manzana  (arriba a la izquierda) → **Acerca de esta Mac**:
    - Si dice **Apple M1, M2, M3 o M4** → elegí **Apple Silicon**.
    - Si dice **Intel** → elegí **Intel**.
-3. Abrí el archivo descargado e instalalo como cualquier programa (en Mac: arrastrá la ballena 🐳 a **Aplicaciones**).
+3. Abrí el archivo descargado e instalalo como cualquier programa (en Mac: arrastrá la ballena a **Aplicaciones**).
 
 ---
 
@@ -37,11 +37,11 @@ El proyecto tiene dos partes:
 Si te pide iniciar sesión, podés tocar **Skip**.
 Esperá hasta que abajo a la izquierda diga **"Engine running"** en verde.
 
-> ⚠️ Sin este paso no funciona nada. Podés minimizar Docker, pero no lo cierres.
+> Sin este paso no funciona nada. Podés minimizar Docker, pero no lo cierres.
 
 ### Paso 2 — Abrir la Terminal dentro de la carpeta del proyecto
 
-La Terminal es una ventana donde le escribís órdenes a la computadora. Tiene que estar "parada" en la carpeta del proyecto.
+La Terminal es una ventana donde le escribís órdenes a la computadora. Tiene que estar parada en la carpeta del proyecto.
 
 - **Mac:**
   1. `Cmd + Espacio`, escribí **Terminal** y Enter.
@@ -64,18 +64,18 @@ docker compose up --build
 
 Va a salir **mucho texto**. Es normal. **La primera vez tarda unos minutos.**
 
-✅ **Está listo cuando aparece esta línea:**
+**Está listo cuando aparece esta línea:**
 ```
 torneo_python_app  | Conexion a MySQL OK
 ```
-Después la Terminal se queda "quieta". Eso está bien: significa que está prendido y esperando.
+Después la Terminal se queda "quieta". Eso significa que está prendido y esperando.
 
 > **No cierres la Terminal.** Si la cerrás, se apaga el proyecto.
 
 ### Paso 4 — Entrar al sistema
 
 1. Abrí **Chrome** o **Safari**.
-2. Hacé clic en la barra de arriba (donde se escriben las direcciones web).
+2. Hacé clic en la barra del buscador.
 3. Escribí **`localhost:5001`** y apretá Enter.
 
    *"localhost" quiere decir "esta misma computadora": la página no está en internet, funciona en tu compu.*
@@ -89,7 +89,7 @@ Después la Terminal se queda "quieta". Eso está bien: significa que está pren
 
 ### Paso 5 — Apagarlo
 
-En la Terminal, apretá **`Control + C`** (la tecla Control, no Cmd).
+En la Terminal, apretá **`Control + C`** 
 
 ---
 
@@ -121,9 +121,9 @@ El `-v` borra los datos guardados y Docker vuelve a crear la base desde cero con
 |---|---|---|
 | `failed to connect to the docker API` o `Cannot connect to the Docker daemon` | Docker Desktop no está abierto | Hacé el **Paso 1** y probá de nuevo |
 | `Access denied for user 'login_app'` que se repite y no termina | Quedó guardada una base vieja o incompleta | `Control + C`, después `docker compose down -v` y `docker compose up --build` |
-| `La base de datos esta iniciando... reintento` unas pocas veces | La base está arrancando | Nada, esperá. La app se conecta sola |
-| `WARNING: This is a development server` (en rojo) | Aviso estándar de Flask | Nada, es normal |
-| `mysql_native_password is deprecated` | Aviso de MySQL sobre versiones futuras | Nada, es normal |
+| `La base de datos esta iniciando... reintento` unas pocas veces | La base está arrancando | Esperá, la app se conecta sola |
+| `WARNING: This is a development server` (en rojo) | Aviso estándar de Flask | Es normal |
+| `mysql_native_password is deprecated` | Aviso de MySQL sobre versiones futuras | Es normal |
 | `port is already allocated` | Otro programa usa ese puerto | En `docker-compose.yml` cambiá `"5001:5000"` por `"5002:5000"` y entrá a `localhost:5002` |
 | El navegador dice "no se puede acceder al sitio" | El proyecto no está prendido | Revisá que la Terminal siga abierta y que haya salido `Conexion a MySQL OK` |
 
@@ -134,16 +134,16 @@ El `-v` borra los datos guardados y Docker vuelve a crear la base desde cero con
 1. **Reportes** (como administrador, menú de arriba): están los 9 reportes pedidos más 3 propios, calculados con los datos de prueba (6 equipos, 3 fechas jugadas).
 2. **Cargar una planilla** (como planillero): en la pantalla de inicio aparece el partido *Los Ingenieros vs Psico Team* (fecha 4) para cargar.
    - Maximiliano Medina aparece **suspendido** y el sistema no deja anotarlo.
-   - Si le ponés una tarjeta amarilla a Lucía González (sería su 3ra), se crea **sola** su suspensión.
+   - Si le ponés una tarjeta amarilla a Lucía González (sería su 3ra), se crea sola su suspensión.
    - Al final tocá **Marcar como jugado**: el partido pasa a contar en la tabla de posiciones.
 3. **Programar un partido** (administrador → Partidos → Programar): probá repetir un cruce, poner un equipo dos veces en la misma fecha o usar una cancha ocupada. El sistema lo rechaza y explica por qué.
-4. **Armar un equipo** (administrador): arriba a la derecha, en **Edición**, elegí *Torneo 2027-1 (inscripción)*. Ahí se pueden inscribir equipos y armar planteles. En la edición que ya está en curso, los planteles no se pueden modificar.
+4. **Armar un equipo** (administrador): arriba a la derecha, en **Edición**, elegí *Torneo 2027-1 (inscripción)*. Ahí se pueden inscribir equipos y armar planteles. En la edición que ya está en curso los planteles no se pueden modificar.
 
 ---
 
 ## Para usarlo sin Docker (opcional)
 
-Solo si tenés **MySQL 8** y **Python 3.10 o superior** instalados en la computadora.
+Solo funciona si tenés **MySQL 8** y **Python 3.10 o superior** instalados en la computadora.
 
 1. Crear la base: ejecutar los 4 archivos de la carpeta `db`, **en orden**, con el usuario `root` (desde MySQL Workbench o desde la Terminal):
    ```
@@ -169,7 +169,7 @@ Solo si tenés **MySQL 8** y **Python 3.10 o superior** instalados en la computa
 |---|---|
 | `db/01_tablas.sql` | Crea las tablas |
 | `db/02_inserciones.sql` | Datos de prueba |
-| `db/03_triggers.sql` | Reglas del torneo (por ejemplo, que un suspendido no juegue) |
+| `db/03_triggers.sql` | Reglas del torneo |
 | `db/04_permisos.sql` | Usuarios de la base con permisos distintos para administrador y planillero |
 | `Consultas.sql` | Las consultas de los reportes, para correrlas a mano |
 | `main.py` | Arranque de la aplicación, login y pantalla de inicio |
