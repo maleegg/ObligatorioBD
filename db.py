@@ -1,6 +1,6 @@
-"""Conexion a MySQL sin ORM: todas las consultas se escriben en SQL a mano.
+"""Conexion a MySQL, todas las consultas se escriben en SQL.
 
-Cada rol de la app se conecta con SU PROPIO usuario de base de datos:
+Cada rol de la app se conecta con su propio usuario de base de datos:
   - login_app          -> solo lee la tabla login (para verificar correo y contrasena)
   - admin_torneo       -> gestiona todos los datos
   - planillero_torneo  -> solo carga planillas, goles y tarjetas

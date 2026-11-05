@@ -17,7 +17,7 @@ GRANT INSERT, UPDATE, DELETE ON OBLIGATORIO.gol TO 'planillero_torneo'@'%';
 GRANT INSERT, UPDATE, DELETE ON OBLIGATORIO.tarjeta TO 'planillero_torneo'@'%';
 GRANT UPDATE (estado) ON OBLIGATORIO.partido TO 'planillero_torneo'@'%';
 
--- planillero: puede consultar lo necesario para armar la planilla (no la tabla login)
+-- planillero: puede consultar lo necesario para armar la planilla, no controla la tabla login
 GRANT SELECT ON OBLIGATORIO.partido TO 'planillero_torneo'@'%';
 GRANT SELECT ON OBLIGATORIO.equipo TO 'planillero_torneo'@'%';
 GRANT SELECT ON OBLIGATORIO.jugador TO 'planillero_torneo'@'%';

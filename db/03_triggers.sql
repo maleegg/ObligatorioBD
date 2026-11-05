@@ -44,12 +44,12 @@ BEGIN                           -- abre el bloque de codigo del trigger
             SET MESSAGE_TEXT = 'Ambos equipos deben tener al menos 5 jugadores en su plantel';
     END IF;
 
--- REGLA 3: Sin rival repetido: dos equipos no pueden enfrentarse dos veces en la misma edicion (salvo partido cancelado).
+-- REGLA 3: Sin rival repetido: dos equipos no pueden enfrentarse dos veces en la misma edicion (salvo si el partido esta cancelado).
     IF EXISTS (                                 -- es verdadero si la subconsulta devuelve al menos una fila
         SELECT 1 FROM partido
-        WHERE id_torneo = NEW.id_torneo         -- mira solo partidos de la misma edicion del torneo
+        WHERE id_torneo = NEW.id_torneo         -- mira solo los partidos de la misma edicion del torneo
           AND estado <> 'cancelado'             -- ignora los partidos cancelados
-          -- busca el mismo cruce en cualquiera de los dos sentidos: si ya jugo A contra B, tampoco se permite B contra A
+          -- busca el mismo cruce en cualquiera de los dos sentidos: si ya jugo A contra B, no se permite B contra A
           AND ((id_equipo_local = NEW.id_equipo_local AND id_equipo_visitante = NEW.id_equipo_visitante)
             OR (id_equipo_local = NEW.id_equipo_visitante AND id_equipo_visitante = NEW.id_equipo_local))
     ) THEN
@@ -61,9 +61,9 @@ BEGIN                           -- abre el bloque de codigo del trigger
     IF EXISTS (
         SELECT 1 FROM partido
         WHERE id_torneo = NEW.id_torneo
-          AND numero_fecha = NEW.numero_fecha   -- mira solo partidos de la misma fecha del torneo
+          AND numero_fecha = NEW.numero_fecha   -- mira solo los partidos de la misma fecha del torneo
           AND estado <> 'cancelado'
-          -- busca si alguno de los dos equipos nuevos ya aparece, de local o de visitante, en esa fecha
+          -- busca si alguno de los dos equipos nuevos ya aparece en esa fecha
           AND (id_equipo_local IN (NEW.id_equipo_local, NEW.id_equipo_visitante)
             OR id_equipo_visitante IN (NEW.id_equipo_local, NEW.id_equipo_visitante))
     ) THEN
@@ -167,7 +167,7 @@ END$$
 DELIMITER ;
 
 -- =====================================================================================
--- REGLAS AGREGADAS PARA CUBRIR TODA LA LETRA
+-- REGLAS EXTRA 
 -- Los procedimientos (sp_...) agrupan validaciones que usan varios triggers,
 -- asi la misma regla no se escribe dos veces. Un trigger puede llamar a un procedimiento con CALL.
 -- La hora de "ahora" se toma de NOW(), que usa la zona horaria de Uruguay (-03:00).
@@ -205,10 +205,10 @@ DROP TRIGGER IF EXISTS trg_sancion_update;
 DELIMITER $$
 
 -- -------------------------------------------------------------------------------------
--- PLANTELES: entre 5 y 10 jugadores, todos de la facultad del equipo, maximo 2
+-- PLANTELES: tienen entre 5 y 10 jugadores, todos de la facultad del equipo, maximo 2
 -- docentes/funcionarios, y solo se modifican mientras el torneo esta en inscripcion.
 -- (El minimo de 5 se exige al programar un partido, en el TRIGGER 1.)
--- p_excluir_ci: en un UPDATE, el jugador de la fila vieja, para no contarlo dos veces.
+-- p_excluir_ci: en un UPDATE excluye a jugadores de la fila vieja, para no contarlos dos veces.
 -- -------------------------------------------------------------------------------------
 CREATE PROCEDURE sp_validar_plantel(IN p_equipo INT, IN p_ci INT, IN p_torneo INT, IN p_excluir_ci INT)
 BEGIN
@@ -304,9 +304,9 @@ BEGIN
 END$$
 
 -- -------------------------------------------------------------------------------------
--- EQUIPOS: se inscriben durante la inscripcion; el capitan es de la facultad del equipo
+-- EQUIPOS: se inscriben durante la inscripcion, el capitan es de la facultad del equipo
 -- y no esta en otro equipo de esa edicion. Al cambiar de capitan, el nuevo debe estar
--- en el plantel. (La app agrega al capitan al plantel en la misma transaccion del alta.)
+-- en el plantel. 
 -- -------------------------------------------------------------------------------------
 CREATE TRIGGER trg_equipo_insert
 BEFORE INSERT ON equipo
@@ -393,7 +393,7 @@ BEGIN
     END IF;
 END$$
 
--- Datos generales: torneo no finalizado, dia dentro del torneo, y "jugado" solo si el dia y turno ya pasaron
+-- Datos generales: torneo no finalizado, dia dentro del torneo, y "jugado" cuando el partido ya finalizo
 CREATE PROCEDURE sp_validar_datos_partido(IN p_torneo INT, IN p_dia DATE, IN p_turno INT, IN p_estado VARCHAR(20))
 BEGIN
     DECLARE v_estado_torneo VARCHAR(20);
@@ -433,8 +433,8 @@ CREATE TRIGGER trg_partido_update
 BEFORE UPDATE ON partido
 FOR EACH ROW
 BEGIN
-    -- un partido jugado queda congelado: no cambia de estado (asi tampoco se puede cancelar y luego borrar)
-    -- ni de equipos, fecha, dia, turno o cancha. Su resultado se corrige con los goles (ver 48 horas).
+    -- un partido jugado no cambia de estado, asi tampoco se puede cancelar y luego borrar,
+    -- tampoco cambia de equipos, fecha, dia, turno o cancha. Su resultado se corrige con los goles.
     IF OLD.estado = 'jugado' THEN
         IF NEW.estado <> 'jugado' THEN
             SIGNAL SQLSTATE '45000'
@@ -467,8 +467,8 @@ END$$
 
 -- -------------------------------------------------------------------------------------
 -- PLANILLA, GOLES Y TARJETAS
--- Se cargan una vez disputado el partido (dia y turno pasados), nunca en partidos
--- cancelados o postergados, y si el partido ya esta marcado como jugado, solo dentro
+-- estos datos se cargan una vez jugado el partido, nunca en partidos
+-- cancelados o postergados, y si el partido ya esta marcado como jugado solo dentro
 -- de las 48 horas posteriores a su disputa.
 -- -------------------------------------------------------------------------------------
 CREATE PROCEDURE sp_validar_carga_partido(IN p_id_partido INT)
@@ -567,7 +567,7 @@ BEGIN
     CALL sp_validar_en_planilla(NEW.id_partido, NEW.ci_jugador);
 END$$
 
--- Cambiar jugador, partido o color alteraria las sanciones automaticas: se borra y se vuelve a cargar
+-- Cambiar de jugador, partido o color altera las sanciones automaticas: se borra y se vuelve a cargar
 CREATE TRIGGER trg_tarjeta_update
 BEFORE UPDATE ON tarjeta
 FOR EACH ROW
@@ -685,8 +685,8 @@ END$$
 DELIMITER ;
 
 -- -------------------------------------------------------------------------------------
--- JUGADORES: al editar un jugador no se pueden romper las reglas de su plantel
--- (que sea de la facultad del equipo y maximo 2 docentes/funcionarios por plantel)
+-- JUGADORES: al editar un jugador no se pueden romper las reglas de su plantel, o sea
+--que sea de la facultad del equipo y que haya maximo 2 docentes/funcionarios por plantel
 -- -------------------------------------------------------------------------------------
 DROP TRIGGER IF EXISTS trg_jugador_update;
 DROP TRIGGER IF EXISTS trg_partido_con_planilla;
@@ -720,8 +720,7 @@ BEGIN
     END IF;
 END$$
 
--- PARTIDOS: si ya tiene planilla cargada, no se pueden cambiar sus equipos ni su torneo
--- (la planilla quedaria con jugadores de un equipo que ya no juega ese partido)
+-- PARTIDOS: si un partido ya tiene planilla cargada, no se pueden cambiar sus equipos ni su torneo
 CREATE TRIGGER trg_partido_con_planilla
 BEFORE UPDATE ON partido
 FOR EACH ROW

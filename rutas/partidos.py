@@ -11,7 +11,7 @@ from validaciones import Validador
 bp = Blueprint("partidos", __name__, url_prefix="/partidos")
 ESTADOS = ("programado", "jugado", "postergado", "cancelado")
 
-# Goles de cada equipo: un gol cuenta para el equipo del jugador, salvo que sea autogol (cuenta para el rival)
+# Goles de cada equipo: un gol cuenta para el equipo del jugador, salvo que sea gol en contra, que cuenta como gol para el equipo contrario.
 SQL_GOLES = """(SELECT COUNT(*) FROM gol g
                 JOIN planilla_partido pp ON pp.id_partido = g.id_partido AND pp.ci_jugador = g.ci_jugador
                 WHERE g.id_partido = p.id_partido
@@ -80,7 +80,7 @@ def formulario(id_partido=None):
         v.entero("id_cancha", "Cancha", 1)
         v.fecha("dia", "Dia")
         v.entero("id_turno", "Turno", 1)
-        # al crear, un partido siempre empieza "programado"; se marca jugado desde la planilla
+        # al crear un partido siempre empieza "programado", se marca jugado desde la planilla
         estados_validos = ESTADOS if id_partido else ("programado",)
         v.opcion("estado", "Estado", estados_validos)
         d = v.datos
