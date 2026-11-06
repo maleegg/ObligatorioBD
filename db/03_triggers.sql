@@ -686,7 +686,7 @@ DELIMITER ;
 
 -- -------------------------------------------------------------------------------------
 -- JUGADORES: al editar un jugador no se pueden romper las reglas de su plantel, o sea
---que sea de la facultad del equipo y que haya máximo 2 docentes/funcionarios por plantel
+-- que sea de la facultad del equipo y que haya máximo 2 docentes/funcionarios por plantel
 -- -------------------------------------------------------------------------------------
 DROP TRIGGER IF EXISTS trg_jugador_update;
 DROP TRIGGER IF EXISTS trg_partido_con_planilla;
